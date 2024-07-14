@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Predictor</title>
+</head>
+<body>
+    <h1>Symptom Predictor</h1>
+    <form id="symptomForm">
+        <label for="symptom">Enter your symptoms:</label><br>
+        <textarea id="symptom" name="symptom" rows="4" cols="50"></textarea><br><br>
+        <button type="submit">Predict</button>
+    </form>
+    <h2>Prediction Result:</h2>
+    <p id="result"></p>
+
+    <script>
+        document.getElementById('symptomForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const symptom = document.getElementById('symptom').value;
+
+            // Log symptom value for debugging
+            console.log('Symptom submitted:', symptom);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: symptom })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                // Log response for debugging
+                console.log('Response:', data);
+
+                document.getElementById('result').textContent = `${data.prediction}`;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                document.getElementById('result').textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
